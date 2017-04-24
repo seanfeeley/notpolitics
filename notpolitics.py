@@ -121,7 +121,10 @@ class MemberOfParliament():
 def main(mps, options):
 
 	mps = [MemberOfParliament(member) for member in mps]
-	mps = sorted(mps, key=operator.attrgetter('%s.value' % options.sortby), reverse=False)
+	if options.sortby == 'total':
+		mps = sorted(mps, key=operator.attrgetter('total_income'), reverse=False)
+	else:
+		mps = sorted(mps, key=operator.attrgetter('%s.value' % options.sortby), reverse=False)
 
 	for i in mps:
 		print i
@@ -136,7 +139,7 @@ if __name__ == "__main__":
 
 	parser.add_option("--limit", help="Limit results (pre - sorted)", action="store", type='int', default=650)
 	parser.add_option("--detailed", help="Detailed print", action="store_true", default=False)
-	parser.add_option("--sortby", help="Sort By", action="store", default='employment')
+	parser.add_option("--sortby", help="Sort By", action="store", default='total')
 
 	# parse the comand line
 	(options, args) = parser.parse_args()
