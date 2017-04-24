@@ -1,20 +1,25 @@
-import time
-import json
-import requests
+# -*- coding: utf-8 -*-
+import locale, copy
+locale.setlocale( locale.LC_ALL, '' )
+
 import ast
-import pprint
 from bs4 import BeautifulSoup
 import operator
+from optparse import OptionParser
 
 # local libs
-import Intrests
+from employment import Employment
+from salary import Salary
+from utils import get_all_mps, get_request
 
 theyworkyou_apikey = 'DLXaKDAYSmeLEBBWfUAmZK3j'
 request_wait_time = 3600.0
-	
+
 class MemberOfParliament():
 	def __init__(self, member):
 		"""Class holding the individual member of parliament"""
+
+		self.categories = []
 
 		# set the member
 		self.setMember(member)
@@ -40,7 +45,7 @@ class MemberOfParliament():
 		if member.has_key('office'):
 			self.office = member['office']
 		else:
-			self.office = None		
+			self.office = None	
 
 	def getPerson(self):
 		"""Method to set more variables"""
@@ -72,17 +77,9 @@ class MemberOfParliament():
 		text = soup.text
 		splits = text.splitlines()
 
+		# create a dictionary of search terms and the corresponding class to initialise when found
 		headings = {}
-		headings['Employment and earnings'] = Intrests.Employment()
-		headings['Support linked to an MP but received by a local party organisation or indirectly via a central party organisation'] = Intrests.IndirectDonations()
-		headings['Any other support not included in Category 2(a)'] = Intrests.DirectDonations()
-		headings['Gifts, benefits and hospitality from UK sources'] = Intrests.GiftsUK()
-		headings['Visits outside the UK'] = Intrests.VisitsNonUK()
-		headings['Gifts and benefits from sources outside the UK'] = Intrests.GiftsNonUK()
-		headings['Land and property portfolio'] = Intrests.Property()
-		headings["Shareholdings: over 15% of issued share capital"] = Intrests.Shareholdings()
-		headings['Miscellaneous'] = Intrests.Miscellaneous()
-		headings['Family members employed and paid from parliamentary expenses'] = Intrests.Family()
+		headings['Employment and earnings'] = Employment()
 
 		last_heading = None
 		for i in splits:
@@ -96,64 +93,69 @@ class MemberOfParliament():
 				pass
 			else:
 				if last_heading:
-					headings[last_heading].set(i)
+					headings[last_heading].add_entry(i)
 
+		for each in headings.keys():
+			headings[each].parse()
+
+		# store dictionary values (classes), as MemberOfParliament class variable
 		self.employment = headings['Employment and earnings']
-		self.indirect = headings['Support linked to an MP but received by a local party organisation or indirectly via a central party organisation']
-		self.direct = headings['Any other support not included in Category 2(a)']
-		self.gifts_uk = headings['Gifts, benefits and hospitality from UK sources']
-		self.visist = headings['Visits outside the UK']
-		self.gifts_non_uk = headings['Gifts and benefits from sources outside the UK']
-		self.property = headings['Land and property portfolio']
-		self.shareholdings = headings["Shareholdings: over 15% of issued share capital"]
-		self.miscellaneous = headings['Miscellaneous']
-		self.family = headings['Family members employed and paid from parliamentary expenses']
+		self.salary = Salary(self.office, self.first_name, self.last_name, self.party)
+		
+		# append to categories list, iterable
+		self.categories.append(self.employment)
+		self.categories.append(self.salary)
 
 	def __str__(self):
 
-		header = '\n%s\n%s %s (%s, %s)\n%s\n' % ('*'*200, self.first_name, self.last_name, self.party, self.constituency, '*'*200)
-		# properties = 'Properties : %s\n' % self.property.entries
-		# shareholdings = 'Shareholdings : %s\n' % self.shareholdings.entries
-
-		# return '%s%s%s' % (header, properties, shareholdings)
+		header = '\n%s\n%s %s (%s, %s) | Declared Annual Income %s\n%s\n' % ('*'*200, self.first_name, self.last_name, self.party, self.constituency, locale.currency(self.total_income, grouping=True), '*'*200)
 		return header
 
-# Functions
-def get_request(url, user=None, headers={}):
-	"""Function to return a http get request"""
+	@property
+	def total_income(self):
+		income = 0
+		for each in self.categories:
+			income += each.value
+		return income
 
-	if user:
-		request = requests.get(url, auth=(user, ''), headers=headers)
-	else:
-		request = requests.get(url, headers=headers)
+def main(mps, options):
 
-	if request.status_code != 200:
-		print "Ok, I'll wait for 5 mins"
-		time.sleep(request_wait_time)
-		return get_request(url, user, headers)
-	else:
-		return request
+	mps = [MemberOfParliament(member) for member in mps]
+	mps = sorted(mps, key=operator.attrgetter('%s.value' % options.sortby), reverse=False)
 
-def get_all_mps():
-	"""Function to return a full list of current MPs as """
+	for i in mps:
+		print i
+		for each in i.categories:
+			print each.summary
+			if options.detailed:
+				each.print_detailed()
+				print ''
 
-	url = 'https://www.theyworkforyou.com/api/getMPs?key=%s&output=js' % (theyworkyou_apikey)
-	request = get_request(url=url, user=None, headers={})
+if __name__ == "__main__":
+	parser = OptionParser()
 
-	# literal eval the json request into actual json
-	literal = ast.literal_eval(request.content)
+	parser.add_option("--limit", help="Limit results (pre - sorted)", action="store", type='int', default=650)
+	parser.add_option("--detailed", help="Detailed print", action="store_true", default=False)
+	parser.add_option("--sortby", help="Sort By", action="store", default='employment')
 
-	return literal
+	# parse the comand line
+	(options, args) = parser.parse_args()
 
-mps = [MemberOfParliament(member) for member in get_all_mps()[:10]]
+	mps = get_all_mps(theyworkyou_apikey)
+	searched = []
 
-# sort by surname
-mps = sorted(mps, key=operator.attrgetter('last_name'))
+	# TODO: fix this crude arg porser
+	if args:
+		for member in args:
+			for i in mps:
+				if member.lower() in i['name'].lower():
+					searched.append(i)
+				if member.lower() in i['party'].lower():
+					searched.append(i)					
+		mps = searched
 
-for i in mps:
-	print i
-	if i.property.hasProperty:
-		i.property.parse()
-		i.property.summary()
-		i.property.detailed()
+	if options.limit:
+		mps = mps[:options.limit]
+
+	main(mps, options)
 
