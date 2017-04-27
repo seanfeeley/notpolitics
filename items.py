@@ -16,6 +16,10 @@ class Item():
 		self.registered = registered
 		self.amount = amount
 
+		self.isIncome = False
+		self.isWealth = False
+		self.isGift = False
+
 	def __str__(self):
 		rows, columns = os.popen('stty size', 'r').read().split()
 		w = int(columns) - 30

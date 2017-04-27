@@ -5,6 +5,7 @@ import ast
 import xml.etree.cElementTree as ElementTree
 import locale
 locale.setlocale( locale.LC_ALL, '' )
+from datetime import datetime
 
 import pprint
 
@@ -51,6 +52,16 @@ def get_xml_dict(xml_file):
 	xmldict = XmlDictConfig(root)
 
 	return xmldict
+
+def string_to_datetime(date_string):
+    """
+    """
+    return datetime.strptime(datetime, '%d-%m-%y')
+
+def padded_string(string, padding=190):
+    """Return a padded string"""
+
+    return string.ljust(padding)
 
 class XmlListConfig(list):
     def __init__(self, aList):
@@ -113,4 +124,106 @@ class XmlDictConfig(dict):
             # finally, if there are no child tags and no attributes, extract
             # the text
             else:
-                self.update({element.tag: element.text})	
+                self.update({element.tag: element.text})
+
+
+
+
+
+# xml_data = os.path.dirname(os.path.abspath(__file__)) , 'data')
+
+# current_xml_files = [os.path.join(os.path.dirname(os.path.abspath(__file__)) , 'data', 'regmem2017-04-10.xml' )]
+# current_xml_files.append(os.path.join(os.path.dirname(os.path.abspath(__file__)) , 'data', 'regmem2017-03-06.xml' ))
+
+
+
+
+# def readFromXml(self):
+#     """Method to read an xml file into a dict"""
+
+#     self.category_list_xml = None
+
+#     for xml in current_xml_files:
+
+#         print xml
+
+#         xmldict = get_xml_dict(xml)
+
+#         for key in xmldict['regmem']:
+
+#             pid = key['personid'].split('/')[-1]
+
+#             if pid == self.person_id:
+
+
+#                 print '-'*100
+#                 print key['membername']
+#                 print '-'*100
+
+#                 self.category_list_xml = self.fix_xml_dict(key['category'])
+#                 print ''
+
+#                 break
+
+# def fix_xml_dict(self, category_list_xml):
+#     """Fix up"""
+
+#     # create a dictionary of search terms and the corresponding class to initialise when found
+#     headings = {}
+#     headings['Employment and earnings'] = Employment() # 1
+#     headings['Support linked to an MP but received by a local party organisation'] = IndirectDonations() # 2 (a)
+#     headings['Any other support not included in Category 2(a)'] = DirectDonations() # 2 (b)
+#     headings['Gifts, benefits and hospitality from UK sources'] = Gifts() # 3
+#     headings['Visits outside the UK'] = VisitsOutsideUK() # 4
+#     headings['Gifts and benefits from sources outside the UK'] = GiftsOutsideUK() # 5
+#     headings['Land and property portfolio'] = Property() # 6
+#     headings["Shareholdings: over 15% of issued share capital"] = Shareholdings() #7 (i)
+#     headings["Other shareholdings, valued at more than"] = OtherShareholdings() #7 (ii)
+#     headings['Miscellaneous'] = Miscellaneous() # 8
+#     headings['Family members employed and paid from parliamentary expenses'] = Family() # 9
+#     headings['Family members engaged in lobbying'] = FamilyLobbyists() # 10
+
+#     searches = [each for each in headings.keys()]
+
+#     if isinstance(category_list_xml, list):
+
+#         new = {}
+
+#         for cat in category_list_xml:
+
+#             name = cat['name']
+#             cat_type = cat['type']
+#             record = cat['record']['item']
+#             print '-', name, cat_type
+
+#             if isinstance(record, str):
+#                 print '\t%s' % record
+
+#                 for x in searches:
+#                     if x in name:
+#                         new[x] = [record]
+
+#             if isinstance(record, list):
+#                 # ok, so i have a list, a list of what?
+#                 for each in record:
+#                     if isinstance(each, str):
+#                         # is a list of strings, lets keep it like that
+#                         for x in searches:
+#                             if x in name:
+#                                 new[x] = record
+#                     if isinstance(each, list):
+#                         pass
+
+#         return new
+#     else:
+#         raise
+
+
+
+            
+
+
+
+
+
+

@@ -12,10 +12,8 @@ class FamilyLobbyists(Category):
 		Family Lobbyists
 		"""
 
-		# lists of raw entries and parsed entries (dictionaries)
-		self.raw_entries = []
-		self.entries = []
-		self.items = []
+		# Init the class, then set some class specific variables
+		Category.__init__(self)
 
 		# category info
 		self.category_id = 12
@@ -61,11 +59,9 @@ class Family(Category):
 		Family
 		"""
 
-		# lists of raw entries and parsed entries (dictionaries)
-		self.raw_entries = []
-		self.entries = []
-		self.items = []
-
+		# Init the class, then set some class specific variables
+		Category.__init__(self)
+		
 		# category info
 		self.category_id = 11
 		self.category_type = 'family'

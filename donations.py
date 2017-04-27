@@ -11,11 +11,8 @@ class IndirectDonations(Category):
 		"""
 		Indirect Donations
 		"""
-
-		# lists of raw entries and parsed entries (dictionaries)
-		self.raw_entries = []
-		self.entries = []
-		self.items = []
+		# Init the class, then set some class specific variables
+		Category.__init__(self)
 
 		# category info
 		self.category_id = 2
@@ -44,17 +41,6 @@ class IndirectDonations(Category):
 							'donor_status' : None,
 							'purpose' : None
 							}
-
-
-			# headings = []
-			# headings.append('Name of donor: ')
-			# headings.append('Address of donor: ')
-			# headings.append('Amount of donation or nature and value if donation in kind: ')
-			# headings.append('Date received: ')
-			# headings.append('Date accepted: ')
-			# headings.append('Donor status: ')
-			# headings.append('(Registered ')
-
 
 			catch = []
 			catch.append(['Name of donor: ', 'Address of donor: '])
@@ -136,11 +122,9 @@ class DirectDonations(Category):
 		"""
 		Direct Donations
 		"""
-
-		# lists of raw entries and parsed entries (dictionaries)
-		self.raw_entries = []
-		self.entries = []
-		self.items = []
+		
+		# Init the class, then set some class specific variables
+		Category.__init__(self)
 
 		# category info
 		self.category_id = 3
@@ -170,17 +154,6 @@ class DirectDonations(Category):
 						'donor_status' : None,
 						'purpose' : None
 						}
-
-
-		# headings = []
-		# headings.append('Name of donor: ')
-		# headings.append('Address of donor: ')
-		# headings.append('Amount of donation or nature and value if donation in kind: ')
-		# headings.append('Date received: ')
-		# headings.append('Date accepted: ')
-		# headings.append('Donor status: ')
-		# headings.append('(Registered ')
-
 
 		catch = []
 		catch.append(['Name of donor: ', 'Address of donor: '])
@@ -236,11 +209,6 @@ class DirectDonations(Category):
 
 				if 'Donor status: ' in k[0]:
 					template['donor_status'] = r
-			# else:
-			# 	purpose = ''
-
-				# if '(Registered ' in k[0]:
-				# 	template['registered'] = r
 
 		template['raw'] = raw
 		template['raw'] = 'Donor : %s\n\tAddress : %s\n\tAmount : %s\n\tDonor Status : %s\n\tPurpose : %s' % (template['donor'], template['address'], template['amount'], template['donor_status'], template['purpose'])

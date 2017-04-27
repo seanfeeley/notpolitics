@@ -12,16 +12,15 @@ class Employment(Category):
 		Employment
 		"""
 
-		# lists of raw entries and parsed entries (dictionaries)
-		self.raw_entries = []
-		self.entries = []
-		self.items = []
+		# Init the class, then set some class specific variables
+		Category.__init__(self)
 
 		# category info
 		self.category_id = 1
 		self.category_type = 'employment'
 		self.category_description = 'Private Employment'
 		self.isCurrency = True
+
 
 	def do_logic(self, raw):
 		"""

@@ -12,10 +12,8 @@ class Gifts(Category):
 		Gifts
 		"""
 
-		# lists of raw entries and parsed entries (dictionaries)
-		self.raw_entries = []
-		self.entries = []
-		self.items = []
+		# Init the class, then set some class specific variables
+		Category.__init__(self)
 
 		# category info
 		self.category_id = 4
@@ -43,17 +41,6 @@ class Gifts(Category):
 						'donor_status' : None,
 						'purpose' : None
 						}
-
-
-		# headings = []
-		# headings.append('Name of donor: ')
-		# headings.append('Address of donor: ')
-		# headings.append('Amount of donation or nature and value if donation in kind: ')
-		# headings.append('Date received: ')
-		# headings.append('Date accepted: ')
-		# headings.append('Donor status: ')
-		# headings.append('(Registered ')
-
 
 		catch = []
 		catch.append(['Name of donor: ', 'Address of donor: '])
@@ -138,10 +125,8 @@ class GiftsOutsideUK(Category):
 		Gifts from outside the UK
 		"""
 
-		# lists of raw entries and parsed entries (dictionaries)
-		self.raw_entries = []
-		self.entries = []
-		self.items = []
+		# Init the class, then set some class specific variables
+		Category.__init__(self)
 
 		# category info
 		self.category_id = 6
@@ -260,17 +245,6 @@ class GiftsOutsideUK(Category):
 						'donor_status' : None,
 						'purpose' : None
 						}
-
-
-		# headings = []
-		# headings.append('Name of donor: ')
-		# headings.append('Address of donor: ')
-		# headings.append('Amount of donation or nature and value if donation in kind: ')
-		# headings.append('Date received: ')
-		# headings.append('Date accepted: ')
-		# headings.append('Donor status: ')
-		# headings.append('(Registered ')
-
 
 		catch = []
 		catch.append(['Name of donor: ', 'Address of donor: '])

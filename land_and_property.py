@@ -12,11 +12,9 @@ class Property(Category):
 		Property
 		"""
 
-		# lists of raw entries and parsed entries (dictionaries)
-		self.raw_entries = []
-		self.entries = []
-		self.items = []
-
+		# Init the class, then set some class specific variables
+		Category.__init__(self)
+		
 		# category info
 		self.category_id = 7
 		self.category_type = 'property'

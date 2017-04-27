@@ -2,7 +2,7 @@
 import locale, copy, pprint
 locale.setlocale( locale.LC_ALL, '' )
 
-from utils import PrettyPrintUnicode
+from utils import PrettyPrintUnicode, padded_string
 
 class Category():
 
@@ -22,17 +22,13 @@ class Category():
 		self.category_id = 0
 		self.category_type = 'category'
 		self.category_description = 'Category Description'
-		self.isCurrency = True
 
-	def __str__(self):
-		if self.wealth > 0 and self.income > 0:
-			return '(%s) %s (Income : %s) (Wealth : %s)' % (self.category_id, self.category_description.encode('utf-8'), locale.currency(self.income, grouping=True), locale.currency(self.wealth, grouping=True))
-		elif self.wealth > 0:
-			return '(%s) %s (Wealth : %s)' % (self.category_id, self.category_description.encode('utf-8'), locale.currency(self.wealth, grouping=True))
-		elif self.income > 0:
-			return '(%s) %s (Income : %s)' % (self.category_id, self.category_description.encode('utf-8'), locale.currency(self.income, grouping=True))
-		else:
-			return '(%s) %s ' % (self.category_id, self.category_description.encode('utf-8'))
+		# class variables, used for sorting, printing
+		self.isCurrency = True
+		self.isIncome = False
+		self.isWealth = False
+		self.isGift = False
+		self.isExpense = False
 
 	@property
 	def isEmpty(self):
@@ -59,7 +55,7 @@ class Category():
 		Method performing the logic of parsing raw data into dictionary
 		"""
 
-		# entry template - example template only
+		# placeholder method
 		template = {
 						'type' : self.category_type,
 						'registered' : None,
@@ -68,17 +64,6 @@ class Category():
 						'raw' : None
 						}
 		return template
-
-	# @property
-	# def value(self):
-	# 	"""
-	# 	Sums all the amounts in the list of entries
-	# 	"""
-	# 	value = 0
-	# 	for entry in self.entries:
-	# 		value += entry['amount']
-		
-	# 	return value
 
 	@property
 	def wealth(self):
@@ -104,56 +89,53 @@ class Category():
 		
 		return value
 
-	# @property
-	# def hasIncome(self):
-	# 	income = False
-	# 	for each in self.items:
-	# 		if each.isIncome:
-	# 			income = True
-	# 			break
-	# 	return income
-
-	# @property
-	# def hasWealth(self):
-	# 	wealth = False
-	# 	for each in self.items:
-	# 		if each.isWealth:
-	# 			wealth = True
-	# 			break
-	# 	return wealth
+	@property
+	def gifts(self):
+		"""
+		Sums all the amounts in the list of entries
+		"""
+		value = 0
+		for entry in self.items:
+			if entry.isGift:
+				value += entry.amount
+		
+		return value
 
 	@property
-	def summary(self):
+	def expenses(self):
 		"""
-		Returns a string summary of all the entries
+		Sums all the amounts in the list of entries
 		"""
-		if self.isCurrency:
-			return '(%02d) %s - %s' % (len(self.entries), self.category_description, locale.currency(self.value, grouping=True))
-		else:
-			return '(%02d) %s' % (len(self.entries), self.category_description)
-
-	# @property
-	def print_debug(self):
-		"""
-		Returns a list of entry dictionaries
-		"""
-		for entry in self.entries:
-			PrettyPrintUnicode().pprint(entry)
-
-	# @property
-	def print_detailed(self):
-		"""
-		Returns a list of entry dictionaries
-		"""
-		for entry in self.entries:
-			# if self.isCurrency:
-			# 	print '\t%s' % (entry['pretty'], entry['amount'])
-			# else:
-			print '\t%s' % (entry['pretty'])
+		value = 0
+		for entry in self.items:
+			if entry.isExpense:
+				value += entry.amount
+		
+		return value
 
 	def add_entry(self, raw_data):
 		"""
 		Adds raw data, in the form of a string to self.entries
 		"""
 		self.raw_entries.append(raw_data)
-		# print 'ADDING (%s) : %s' % (self.category_type, raw_data)
+
+	def __str__(self):
+		description = '(%02d) %s' % (self.category_id, padded_string(self.category_description.encode('utf-8'), 20))
+
+		# if income and wealth (land and property category)
+		if self.wealth > 0 and self.income > 0:
+			return '%s |  Income : %s  |  Wealth : %s' % (description, locale.currency(self.income, grouping=True), locale.currency(self.wealth, grouping=True))
+		
+		elif self.wealth > 0:
+			return '%s |  Wealth : %s' % (description, locale.currency(self.wealth, grouping=True))
+		
+		elif self.income > 0:
+			return '%s |  Income : %s' % (description, locale.currency(self.income, grouping=True))
+		
+		elif self.gifts > 0:
+			return '%s |  Gifts : %s' % (description, locale.currency(self.gifts, grouping=True))
+	
+		else:
+			return '%s |' % (description)
+
+
