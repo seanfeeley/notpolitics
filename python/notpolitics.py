@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # system libs
-import locale, ast, os, operator
+import locale, ast, os, operator, json
 from bs4 import BeautifulSoup
 from optparse import OptionParser
 
@@ -201,6 +201,31 @@ class MemberOfParliament():
 
 		return self.total_income + self.total_gifts + self.total_expenses
 
+	@property
+	def data(self):
+		"""total annual of mp"""
+
+		data = {}
+		data['name'] = self.name
+		data['party'] = self.party
+		data['constituency'] = self.constituency
+		data['income'] = self.total_income
+		data['wealth'] = self.total_wealth
+		data['gifts'] = self.total_gifts
+
+		data['categories'] = []
+		for category in self.categories:
+			cat_data = category.data
+			temp = []
+
+			for item in category.items:
+				temp.append(item.data)
+
+			cat_data['items'] = temp
+			data['categories'].append(cat_data)
+
+		return data
+
 	def __str__(self):
 		
 		left_text = '%s\n%s %s (%s, %s)' % ('*'*200, self.first_name, self.last_name, self.party, self.constituency)
@@ -215,6 +240,14 @@ def main(mps, options):
 
 	# printout
 	feeback(mps, options)
+
+	if options.json:
+
+		mp_data = [mp.data for mp in mps]
+		json_dump_location = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'json', 'dump.json')
+
+		with open(json_dump_location, 'w') as jsonfile:
+			json.dump(mp_data, jsonfile)
 
 def feeback(mps, options):
 	""""""
@@ -287,6 +320,7 @@ if __name__ == "__main__":
 	parser.add_option("--debug", help="Debug print", action="store_true", default=False)
 	parser.add_option("--sortby", help="Sort By", action="store", default='income')
 	parser.add_option("--from", help="From Date", action="store", default='lastest')
+	parser.add_option("--json", help="Dump to Json file", action="store_true", default=True)
 
 	# parse the comand line
 	(options, args) = parser.parse_args()

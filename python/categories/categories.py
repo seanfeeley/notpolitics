@@ -113,6 +113,16 @@ class Category():
 		
 		return value
 
+	@property
+	def data(self):
+		"""
+		Sums all the amounts in the list of entries
+		"""
+		
+		data = vars(self)
+
+		return data
+
 	def add_entry(self, raw_data):
 		"""
 		Adds raw data, in the form of a string to self.entries

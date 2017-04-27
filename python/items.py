@@ -29,6 +29,16 @@ class Item():
 	def pprint(self):
 		PrettyPrintUnicode().pprint(vars(self))
 
+	@property
+	def data(self):
+		"""
+		Sums all the amounts in the list of entries
+		"""
+		
+		data = vars(self)
+
+		return data
+
 class SalaryItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
 		"""
