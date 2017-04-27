@@ -15,7 +15,7 @@ from categories.gifts import GiftsOutsideUK, Gifts
 from categories.visits import VisitsOutsideUK
 from categories.donations import DirectDonations, IndirectDonations
 from categories.salary import Salary
-from utils import get_all_mps, get_request, get_xml_dict, PrettyPrintUnicode, string_to_datetime, padded_string
+from utils import get_all_mps, get_request, padded_string
 
 locale.setlocale( locale.LC_ALL, '' )
 theyworkyou_apikey = 'DLXaKDAYSmeLEBBWfUAmZK3j'

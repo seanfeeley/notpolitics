@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
-import locale, copy, pprint
+
+# system  libs
+import locale
+
+# local libs
+from utils import padded_string
+
 locale.setlocale( locale.LC_ALL, '' )
 
-from utils import PrettyPrintUnicode, padded_string
-
 class Category():
-
 	'''
-	Class holding a category. Is populated with individual entries, each of the same category type
+	Class holding a category. Is populated with individual items, each of the same category type
 	'''
-
 	def __init__(self):
-		"""Category"""
 
 		# lists of raw entries and parsed entries (dictionaries)
 		self.raw_entries = []
@@ -55,20 +56,12 @@ class Category():
 		Method performing the logic of parsing raw data into dictionary
 		"""
 
-		# placeholder method
-		template = {
-						'type' : self.category_type,
-						'registered' : None,
-						'amount' : 0,
-						'pretty' : None,
-						'raw' : None
-						}
-		return template
+		return raw
 
 	@property
 	def wealth(self):
 		"""
-		Sums all the amounts in the list of entries
+		Sums all the wealth in the list of items
 		"""
 		value = 0
 		for entry in self.items:
@@ -80,7 +73,7 @@ class Category():
 	@property
 	def income(self):
 		"""
-		Sums all the amounts in the list of entries
+		Sums all the income in the list of items
 		"""
 		value = 0
 		for entry in self.items:
@@ -92,7 +85,7 @@ class Category():
 	@property
 	def gifts(self):
 		"""
-		Sums all the amounts in the list of entries
+		Sums all the gifts in the list of items
 		"""
 		value = 0
 		for entry in self.items:
@@ -104,7 +97,7 @@ class Category():
 	@property
 	def expenses(self):
 		"""
-		Sums all the amounts in the list of entries
+		Sums all the expenses in the list of items
 		"""
 		value = 0
 		for entry in self.items:
@@ -116,20 +109,21 @@ class Category():
 	@property
 	def data(self):
 		"""
-		Sums all the amounts in the list of entries
+		Returns the class variables as a key/pair dict
 		"""
 		
-		data = vars(self)
-
-		return data
+		return vars(self)
 
 	def add_entry(self, raw_data):
 		"""
-		Adds raw data, in the form of a string to self.entries
+		Adds raw data, in the form of a string to a list of raw entries
 		"""
 		self.raw_entries.append(raw_data)
 
 	def __str__(self):
+		"""
+		Print a neat summary of the category class
+		"""
 		description = '(%02d) %s' % (self.category_id, padded_string(self.category_description.encode('utf-8'), 20))
 
 		# if income and wealth (land and property category)
@@ -147,5 +141,3 @@ class Category():
 	
 		else:
 			return '%s |' % (description)
-
-

@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-import locale, copy, os
-locale.setlocale( locale.LC_ALL, '' )
 
+# system libs
+import os
+
+# local libs
 from utils import PrettyPrintUnicode
 
 class Item():
@@ -21,28 +23,32 @@ class Item():
 		self.isGift = False
 
 	def __str__(self):
+		"""
+		Prints a pretty string representing the item, formatted to clip at the edge of the screen
+		"""
 		rows, columns = os.popen('stty size', 'r').read().split()
 		w = int(columns) - 30
 
 		return '\t(%s) %s (%s)' % (self.item_id, self.pretty.encode('utf-8')[:w], self.amount)
 
 	def pprint(self):
-		PrettyPrintUnicode().pprint(vars(self))
+		"""
+		Petty prints using custom pprint class, formatting unicode characters
+		"""
+		PrettyPrintUnicode().pprint(self.data)
 
 	@property
 	def data(self):
 		"""
-		Sums all the amounts in the list of entries
+		Returns the class variables as a key/pair dict
 		"""
 		
-		data = vars(self)
-
-		return data
+		return vars(self)
 
 class SalaryItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
 		"""
-		FamilyItem
+		SalaryItem
 		"""
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
@@ -52,7 +58,7 @@ class SalaryItem(Item):
 class AdditionalSalaryItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
 		"""
-		FamilyItem
+		AdditionalSalaryItem
 		"""
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
@@ -62,7 +68,7 @@ class AdditionalSalaryItem(Item):
 class DirectDonationsItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
 		"""
-		FamilyItem
+		DirectDonationsItem
 		"""
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
@@ -72,7 +78,7 @@ class DirectDonationsItem(Item):
 class IndirectDonationsItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
 		"""
-		FamilyItem
+		IndirectDonationsItem
 		"""
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
@@ -106,7 +112,7 @@ class MiscellaneousItem(Item):
 class ShareholdingsItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
 		"""
-		ShaerholdingsItem
+		ShareholdingsItem
 		"""
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
@@ -116,7 +122,7 @@ class ShareholdingsItem(Item):
 class OtherShareholdingsItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
 		"""
-		ShaerholdingsItem
+		OtherShareholdingsItem
 		"""
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
@@ -126,7 +132,7 @@ class OtherShareholdingsItem(Item):
 class GiftsItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
 		"""
-		Gifts item_id
+		GiftsItem
 		"""
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
@@ -136,7 +142,7 @@ class GiftsItem(Item):
 class VisitsOutsideUKItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
 		"""
-		Gifts item_id
+		VisitsOutsideUKItem
 		"""
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
@@ -146,7 +152,7 @@ class VisitsOutsideUKItem(Item):
 class EmploymentItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
 		"""
-		Employment item_id
+		EmploymentItem
 		"""
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
@@ -156,7 +162,7 @@ class EmploymentItem(Item):
 class PropertyItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
 		"""
-		Property item_id
+		PropertyItem
 		"""
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
