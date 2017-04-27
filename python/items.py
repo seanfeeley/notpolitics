@@ -38,7 +38,6 @@ class SalaryItem(Item):
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
 
 		self.isIncome = True
-		self.isWealth = False
 
 class AdditionalSalaryItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
@@ -49,7 +48,6 @@ class AdditionalSalaryItem(Item):
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
 
 		self.isIncome = True
-		self.isWealth = False
 
 class DirectDonationsItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
@@ -59,8 +57,7 @@ class DirectDonationsItem(Item):
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
 
-		self.isIncome = True
-		self.isWealth = False
+		self.isGift = True
 
 class IndirectDonationsItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
@@ -70,8 +67,7 @@ class IndirectDonationsItem(Item):
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
 
-		self.isIncome = True
-		self.isWealth = False
+		self.isGift = True
 
 class FamilyItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
@@ -81,9 +77,6 @@ class FamilyItem(Item):
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
 
-		self.isIncome = False
-		self.isWealth = False
-
 class FamilyLobbyistsItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
 		"""
@@ -91,9 +84,6 @@ class FamilyLobbyistsItem(Item):
 		"""
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
-
-		self.isIncome = False
-		self.isWealth = False
 
 class MiscellaneousItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
@@ -103,9 +93,6 @@ class MiscellaneousItem(Item):
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
 
-		self.isIncome = False
-		self.isWealth = False
-
 class ShareholdingsItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
 		"""
@@ -114,7 +101,6 @@ class ShareholdingsItem(Item):
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
 
-		self.isIncome = False
 		self.isWealth = True
 
 class OtherShareholdingsItem(Item):
@@ -125,7 +111,6 @@ class OtherShareholdingsItem(Item):
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
 
-		self.isIncome = False
 		self.isWealth = True
 
 class GiftsItem(Item):
@@ -136,8 +121,7 @@ class GiftsItem(Item):
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
 
-		self.isIncome = True
-		self.isWealth = False
+		self.isGift = True
 
 class VisitsOutsideUKItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
@@ -147,8 +131,7 @@ class VisitsOutsideUKItem(Item):
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
 
-		self.isIncome = True
-		self.isWealth = False
+		self.isGift = True
 
 class EmploymentItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
@@ -159,14 +142,13 @@ class EmploymentItem(Item):
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
 
 		self.isIncome = True
-		self.isWealth = False
 
 class PropertyItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
 		"""
 		Property item_id
 		"""
+
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
 
-		self.isIncome = False
-		self.isWealth = False
+		# could be either wealth or income or both

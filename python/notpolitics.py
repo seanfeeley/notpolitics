@@ -6,15 +6,15 @@ from bs4 import BeautifulSoup
 from optparse import OptionParser
 
 # local libs
-from employment import Employment
-from family import FamilyLobbyists, Family
-from miscellaneous import Miscellaneous
-from land_and_property import Property
-from shareholdings import OtherShareholdings, Shareholdings
-from gifts import GiftsOutsideUK, Gifts
-from visits import VisitsOutsideUK
-from donations import DirectDonations, IndirectDonations
-from salary import Salary
+from categories.employment import Employment
+from categories.family import FamilyLobbyists, Family
+from categories.miscellaneous import Miscellaneous
+from categories.land_and_property import Property
+from categories.shareholdings import OtherShareholdings, Shareholdings
+from categories.gifts import GiftsOutsideUK, Gifts
+from categories.visits import VisitsOutsideUK
+from categories.donations import DirectDonations, IndirectDonations
+from categories.salary import Salary
 from utils import get_all_mps, get_request, get_xml_dict, PrettyPrintUnicode, string_to_datetime, padded_string
 
 locale.setlocale( locale.LC_ALL, '' )
@@ -181,9 +181,9 @@ class MemberOfParliament():
 	def total_gifts(self):
 		"""total gifts of mp"""
 		value = 0
-		# for category in self.categories:
-		# 	if category.gifts > 0:
-		# 		value += category.gifts
+		for category in self.categories:
+			if category.gifts > 0:
+				value += category.gifts
 		return value
 
 	@property
@@ -195,9 +195,16 @@ class MemberOfParliament():
 		# 		value += category.expenses
 		return value
 
+	@property
+	def total_annual(self):
+		"""total annual of mp"""
+
+		return self.total_income + self.total_gifts + self.total_expenses
+
 	def __str__(self):
+		
 		left_text = '%s\n%s %s (%s, %s)' % ('*'*200, self.first_name, self.last_name, self.party, self.constituency)
-		right_text = 'Income : %s  |  Wealth : %s  |  Gifts : %s  |  Expenses : %s\n%s\n' % (locale.currency(self.total_income, grouping=True), locale.currency(self.total_wealth, grouping=True), locale.currency(self.total_gifts, grouping=True), locale.currency(self.total_expenses, grouping=True), '*'*200)	
+		right_text = 'Income : %s  |  Wealth : %s  |  Gifts : %s  |  Expenses : %s  |  Total Annual Income : %s\n%s\n' % (locale.currency(self.total_income, grouping=True), locale.currency(self.total_wealth, grouping=True), locale.currency(self.total_gifts, grouping=True), locale.currency(self.total_expenses, grouping=True), locale.currency(self.total_annual, grouping=True), '*'*200)	
 		header = '%s %s' % (padded_string(left_text, 275), right_text)		
 		return header
 
@@ -213,18 +220,21 @@ def feeback(mps, options):
 	""""""
 
 	# sort by options specified on commandline
-	if options.sortby == 'total_wealth':
+	if options.sortby == 'wealth':
 		mps = sorted(mps, key=operator.attrgetter('total_wealth'), reverse=False)
 	
-	elif options.sortby == 'total_income':
+	elif options.sortby == 'income':
 		mps = sorted(mps, key=operator.attrgetter('total_income'), reverse=False)
 	
-	elif options.sortby == 'total_gifts':
+	elif options.sortby == 'gifts':
 		mps = sorted(mps, key=operator.attrgetter('total_gifts'), reverse=False)
 	
-	elif options.sortby == 'total_expenses':
+	elif options.sortby == 'expenses':
 		mps = sorted(mps, key=operator.attrgetter('total_expenses'), reverse=False)		
-	
+
+	elif options.sortby == 'annual':
+		mps = sorted(mps, key=operator.attrgetter('total_annual'), reverse=False)	
+
 	else:
 		mps = sorted(mps, key=operator.attrgetter('%s.value' % options.sortby), reverse=False)
 
@@ -275,7 +285,7 @@ if __name__ == "__main__":
 	parser.add_option("--summary", help="Summary print", action="store_true", default=False)
 	parser.add_option("--detailed", help="Detailed print", action="store_true", default=False)
 	parser.add_option("--debug", help="Debug print", action="store_true", default=False)
-	parser.add_option("--sortby", help="Sort By", action="store", default='total_income')
+	parser.add_option("--sortby", help="Sort By", action="store", default='income')
 	parser.add_option("--from", help="From Date", action="store", default='lastest')
 
 	# parse the comand line

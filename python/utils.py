@@ -58,10 +58,12 @@ def string_to_datetime(date_string):
     """
     return datetime.strptime(datetime, '%d-%m-%y')
 
-def padded_string(string, padding=190):
+def padded_string(string, padding=190, left=True, right=False):
     """Return a padded string"""
-
-    return string.ljust(padding)
+    if left:
+        return string.ljust(padding)
+    if right:
+        return string.rjust(padding)
 
 class XmlListConfig(list):
     def __init__(self, aList):
