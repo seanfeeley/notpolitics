@@ -2,6 +2,7 @@
 
 # system libs
 import os
+from textblob import TextBlob
 
 # local libs
 from utils import PrettyPrintUnicode
@@ -17,11 +18,14 @@ class Item():
 		self.pretty = pretty
 		self.registered = registered
 		self.amount = amount
+		self.nouns = []
 
 		self.isIncome = False
 		self.isWealth = False
 		self.isGift = False
 		self.isDonation = False
+
+		self.get_nouns()
 
 	def __str__(self):
 		"""
@@ -31,6 +35,16 @@ class Item():
 		w = int(columns) - 30
 
 		return '\t(%s) %s (%s)' % (self.item_id, self.pretty.encode('utf-8')[:w], self.amount)
+
+	def get_nouns(self):
+		"""
+		Use nlp to find nouns
+		"""
+		blob = TextBlob(self.raw_string)
+
+		for word, tag in blob.tags:
+			if tag == 'NNP':
+				self.nouns.append(word.lemmatize())
 
 	def pprint(self):
 		"""
