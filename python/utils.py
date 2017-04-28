@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # system libs
-import requests, time, ast, locale, pprint
+import requests, time, ast, locale, pprint, re
 from datetime import datetime
 import xml.etree.cElementTree as ElementTree
 locale.setlocale( locale.LC_ALL, '' )
@@ -132,10 +132,26 @@ def string_to_datetime(date_string):
     """
     Returns a datetime class from a given string
     """
-    return datetime.strptime(datetime, '%d-%m-%y')
+    return datetime.strptime(date_string, '%d %B %Y')
 
 def padded_string(string, padding=100):
     """
     Return a padded string
     """
     return string.ljust(padding)
+
+def regex_for_registered(raw_string):
+    """
+    Returns a date class
+    """
+    registered_regex = re.compile(r'\((.*?\))')
+    registered_regex = re.compile(r"\bRegistered\b \d+ [A-Z][a-z]+ \d+")
+
+    if registered_regex.findall(raw_string.encode('utf-8'), re.UNICODE):
+        match = registered_regex.findall(raw_string)
+        date = str(match[-1].split('Registered ')[-1])
+        return string_to_datetime(date).strftime("%d/%m/%Y")
+    else:
+        return None
+
+
