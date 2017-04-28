@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-import locale, copy
-locale.setlocale( locale.LC_ALL, '' )
 
-import re
 from categories import Category
 from items import EmploymentItem
+from utils import regex_for_registered, regex_for_amount
 
 class Employment(Category):
 	def __init__(self):
@@ -22,25 +20,10 @@ class Employment(Category):
 		self.isCurrency = True
 
 
-	def do_logic(self, raw):
+	def do_logic(self, raw_string):
 		"""
-		Method performing the logic of parsing raw data into dictionary
+		Method performing the logic of parsing raw data into item class
 		"""
-
-		template = {
-						'category_type' : self.category_type,
-						'category_id' : self.category_id,
-						'entry_id' : None,
-						'raw' : None,
-						'pretty' : None,
-						'registered' : None,
-						'amount' : 0,
-						# 'wealth' : None,
-						'hours' : None,
-						# 'mins' : None,
-						'employer' : None
-						}
-
 
 		# NOTE: usually the register uses 'Hours' to note time taken -  very clunky but works the moment
 		# TODO: need to be able to parse hours values into mins, hours, days - basically interpret whatever
@@ -48,51 +31,23 @@ class Employment(Category):
 		# TODO: need to decipher if the amount earned, was donated to party, charity etc
 		# TODO: if possible find the employer - could also check companies house to investigate further the links
 		# of the employer, other directors, other MPs, relatives etc
-		if 'Hours:' in raw:
-			registered_regex = re.compile(r"\bRegistered\b \d+ [A-Z][a-z]+ \d+")
-			registered_regex = re.compile(r'\((.*?\))')
+		if 'Hours:' in raw_string:
 
-			hours_regex = re.compile(r"\.")
-			amount_regex = re.compile(r"£\d+")
+			amount = regex_for_amount(raw_string) 
 
-			if hours_regex.search(raw.split('Hours: ')[-1]):
-				template['hours'] = raw.split('Hours: ')[-1].split('.')[0]
-				hours = raw.split('Hours: ')[-1].split('.')[0]
-			else:
-				hours = None
+			if 'monthly salary' in raw_string.lower():
+				amount = amount * 12
 
-			if registered_regex.findall(raw.encode('utf-8'), re.UNICODE):
-				x = registered_regex.findall(raw)
-				template['registered'] = str(x[-1].replace(')', ''))
-				registered = str(x[-1].replace(')', ''))
-			else:
-				registered = None
+			elif 'a month' in raw_string.lower():
+				amount = amount * 12
 
-			if amount_regex.search(raw.replace(',','').encode('utf-8')):
-				template['amount'] = int(amount_regex.search(raw.replace(',', '').encode('utf-8')).group().split('£')[-1])
-				amount = int(amount_regex.search(raw.replace(',', '').encode('utf-8')).group().split('£')[-1])
-				if 'monthly salary' in raw.lower():
-					amount = amount * 12
+			next_id = len(self.entries) + 1
+			item_id = '%04d' % next_id
 
-				if 'a month' in raw.lower():
-					amount = amount * 12
+			# not much we can really split on
+			pretty = raw_string.split(' (Registered')[0]
+			registered = regex_for_registered(raw_string)
 
-			else:
-				amount = 0
+			self.items.append(EmploymentItem(item_id, self.category_id, raw_string, pretty, registered, amount))
 
-			template['raw'] = raw
-			no_hours = raw.split(' Hours')[0]
-			no_reg = no_hours.split('(%s' % template['registered'])[0]
-			template['pretty'] = no_reg[:-1]
-
-			next_num = len(self.entries) + 1
-			template['entry_id'] = '%04d' % next_num
-
-			item_id = '%04d' % next_num
-			category_id = self.category_id
-			raw_string = raw
-			pretty = no_reg[:-1]
-
-			self.items.append(EmploymentItem(item_id, category_id, raw_string, pretty, registered, amount))
-
-			return template
+			return

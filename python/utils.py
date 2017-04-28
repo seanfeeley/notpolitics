@@ -160,13 +160,8 @@ def regex_for_amount(raw_string):
     """
     amount_regex = re.compile(r"£\d+")
 
-    if amount_regex.findall(raw_string.encode('utf-8'), re.UNICODE):
-        match = amount_regex.findall(raw_string)
-        if len(match) > 1:
-            pass
-        else:
-            return int(match[0])
+    if amount_regex.search(raw_string.replace(',','').encode('utf-8')):
+        return int(amount_regex.search(raw_string.replace(',', '').encode('utf-8')).group().split('£')[-1])
     else:
         return 0
-
 

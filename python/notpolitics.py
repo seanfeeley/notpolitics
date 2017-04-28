@@ -232,7 +232,6 @@ class MemberOfParliament():
 		for category in self.categories:
 			cat_data = category.data
 			temp = []
-
 			for item in category.items:
 				temp.append(item.data)
 
@@ -257,7 +256,7 @@ def main(mps, options):
 	feeback(mps, options)
 
 	if options.json:
-
+		# write out to file
 		mp_data = [mp.data for mp in mps]
 		json_dump_location = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'json', 'dump.json')
 
