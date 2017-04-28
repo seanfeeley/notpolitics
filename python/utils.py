@@ -167,6 +167,6 @@ def regex_for_amount(raw_string):
         else:
             return int(match[0])
     else:
-        return None
+        return 0
 
 

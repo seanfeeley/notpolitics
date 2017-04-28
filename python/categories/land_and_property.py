@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-import locale, copy
-locale.setlocale( locale.LC_ALL, '' )
 
-import re
 from categories import Category
 from items import PropertyItem
+from utils import regex_for_registered
 
 class Property(Category):
 	def __init__(self):
@@ -21,70 +19,38 @@ class Property(Category):
 		self.category_description = 'Property'
 		self.isCurrency = True
 
-	def do_logic(self, raw):
+	def do_logic(self, raw_string):
 		"""
-		Method performing the logic of parsing raw data into dictionary
+		Method performing the logic of parsing raw data into item class
 		"""
 
-		template = {
-						'category_type' : self.category_type,
-						'category_id' : self.category_id,
-						'entry_id' : None,
-						'raw' : None,
-						'registered' : None,
-						'amount' : 0,
-						'entry_type' : None,
-						'pretty' : None
-						}
+		next_id = len(self.entries) + 1
+		item_id = '%04d' % next_id
 
-		registered_regex = re.compile(r"\bRegistered\b \d+ [A-Z][a-z]+ \d+")
-
-
-		next_num = len(self.entries) + 1
-		template['entry_id'] = '%04d' % next_num
-		item_id = '%04d' % next_num
-		category_id = self.category_id
-		raw_string = raw
-		pretty = raw.split(' (Registered')[0]
-		
-		if registered_regex.search(raw):
-			splits = registered_regex.search(raw).group().split('Registered ')
-			template['registered'] = splits[-1]
-			registered = splits[-1]
-		else:
-			registered = None
-
+		# not much we can really split on
+		pretty = raw_string.split(' (Registered')[0]
+		registered = regex_for_registered(raw_string)
+	
 		wealth = False
 		income = False
-		if '(i)' in raw:
-			# print 'FOUND i'
-			# template['amount'] = template['amount'] + 100000
-			# template['entry_type'] = 'owner'
-			template['raw'] = raw.split('(i)')[0]
-			amount = template['amount'] + 100000
-			i = PropertyItem(item_id, category_id, raw_string, pretty, registered, amount)
-			i.isWealth = True
+		if '(i)' in raw_string:
+			amount = 100000
+			item = PropertyItem(item_id, self.category_id, raw_string, pretty, registered, amount)
+			item.isWealth = True
 			wealth = True
-			# print i.amount
+			self.items.append(item)
 
-			self.items.append(i)
-
-		if '(ii)' in raw:
-			# print 'FOUND ii'
-			# template['amount'] = template['amount'] + 10000
-			# template['entry_type'] = 'rental'
-			template['raw'] = raw.split('(ii)')[0]
-			amount = template['amount'] + 10000
+		if '(ii)' in raw_string:
+			amount = 10000
 
 			if wealth:
-				# print type(next_num)
-				nn = next_num + 1
+				# as simgle raw item can be both income and wealth, if it is, make two
+				# items, which of course requires different ids
+				nn = next_id + 1
 				item_id = '%04d' % nn
 
-			i = PropertyItem(item_id, category_id, raw_string, pretty, registered, amount)
-			i.isIncome = True
-			# print i.amount
+			item = PropertyItem(item_id, self.category_id, raw_string, pretty, registered, amount)
+			item.isIncome = True
+			self.items.append(item)
 
-			self.items.append(i)
-
-		return template
+		return

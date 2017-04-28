@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-import locale, copy
-locale.setlocale( locale.LC_ALL, '' )
 
-import re
 from categories import Category
 from items import FamilyItem, FamilyLobbyistsItem
 from utils import regex_for_registered
