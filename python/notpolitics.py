@@ -187,6 +187,15 @@ class MemberOfParliament():
 		return value
 
 	@property
+	def total_donations(self):
+		"""total donations of mp"""
+		value = 0
+		for category in self.categories:
+			if category.donations > 0:
+				value += category.donations
+		return value
+
+	@property
 	def total_expenses(self):
 		"""total expenses of mp"""
 		value = 0
@@ -209,9 +218,15 @@ class MemberOfParliament():
 		data['name'] = self.name
 		data['party'] = self.party
 		data['constituency'] = self.constituency
-		data['income'] = self.total_income
-		data['wealth'] = self.total_wealth
-		data['gifts'] = self.total_gifts
+		data['forname'] = self.first_name
+		data['surname'] = self.last_name
+		data['member_id'] = self.member_id
+		data['person_id'] = self.person_id
+
+		data['mp_income'] = self.total_income
+		data['mp_wealth'] = self.total_wealth
+		data['mp_gifts'] = self.total_gifts
+		data['mp_donations'] = self.total_donations
 
 		data['categories'] = []
 		for category in self.categories:
@@ -229,7 +244,7 @@ class MemberOfParliament():
 	def __str__(self):
 		
 		left_text = '%s\n%s %s (%s, %s)' % ('*'*200, self.first_name, self.last_name, self.party, self.constituency)
-		right_text = 'Income : %s  |  Wealth : %s  |  Gifts : %s  |  Expenses : %s  |  Total Annual Income : %s\n%s\n' % (locale.currency(self.total_income, grouping=True), locale.currency(self.total_wealth, grouping=True), locale.currency(self.total_gifts, grouping=True), locale.currency(self.total_expenses, grouping=True), locale.currency(self.total_annual, grouping=True), '*'*200)	
+		right_text = 'Income : %s  |  Wealth : %s  |  Gifts : %s  |  Donations : %s  |  Total Annual Income : %s\n%s\n' % (locale.currency(self.total_income, grouping=True), locale.currency(self.total_wealth, grouping=True), locale.currency(self.total_gifts, grouping=True), locale.currency(self.total_donations, grouping=True), locale.currency(self.total_annual, grouping=True), '*'*200)	
 		header = '%s %s' % (padded_string(left_text, 275), right_text)		
 		return header
 

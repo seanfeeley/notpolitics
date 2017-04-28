@@ -15,7 +15,7 @@ class Category():
 	def __init__(self):
 
 		# lists of raw entries and parsed entries (dictionaries)
-		self.raw_entries = []
+		self.raw_items = []
 		self.entries = []
 		self.items = []
 		
@@ -26,17 +26,13 @@ class Category():
 
 		# class variables, used for sorting, printing
 		self.isCurrency = True
-		self.isIncome = False
-		self.isWealth = False
-		self.isGift = False
-		self.isExpense = False
 
 	@property
 	def isEmpty(self):
 		"""
 		Boolean
 		"""
-		if len(self.raw_entries) == 0:
+		if len(self.raw_items) == 0:
 			return True
 		else:
 			return False
@@ -46,10 +42,19 @@ class Category():
 		Parse the list of raw data strings into entry dictionaries based on self.template
 		"""
 
-		for raw in self.raw_entries:
+		for raw in self.raw_items:
 			entry = self.do_logic(raw)
 			if entry:
 				self.entries.append(entry)
+
+		# add some variables for the category
+		# decorators arent stored as local class variables, but....
+		# i automatically store class varibales using vars(self), to build a dict structure
+		# ready for writing to json, so need to create class variables manually
+		self.category_income = self.income
+		self.category_wealth = self.wealth
+		self.category_gifts = self.gifts
+		self.category_donations = self.donations
 
 	def do_logic(self, raw):
 		"""
@@ -95,6 +100,18 @@ class Category():
 		return value
 
 	@property
+	def donations(self):
+		"""
+		Sums all the donations in the list of items
+		"""
+		value = 0
+		for entry in self.items:
+			if entry.isDonation:
+				value += entry.amount
+		
+		return value
+
+	@property
 	def expenses(self):
 		"""
 		Sums all the expenses in the list of items
@@ -111,14 +128,14 @@ class Category():
 		"""
 		Returns the class variables as a key/pair dict
 		"""
-		
+		income = self.income
 		return vars(self)
 
 	def add_entry(self, raw_data):
 		"""
 		Adds raw data, in the form of a string to a list of raw entries
 		"""
-		self.raw_entries.append(raw_data)
+		self.raw_items.append(raw_data)
 
 	def __str__(self):
 		"""

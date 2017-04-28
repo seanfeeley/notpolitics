@@ -21,6 +21,7 @@ class Item():
 		self.isIncome = False
 		self.isWealth = False
 		self.isGift = False
+		self.isDonation = False
 
 	def __str__(self):
 		"""
@@ -73,7 +74,7 @@ class DirectDonationsItem(Item):
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
 
-		self.isGift = True
+		self.isDonation = True
 
 class IndirectDonationsItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
@@ -83,7 +84,7 @@ class IndirectDonationsItem(Item):
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
 
-		self.isGift = True
+		self.isDonation = True
 
 class FamilyItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
