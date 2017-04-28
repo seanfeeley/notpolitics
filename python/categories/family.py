@@ -5,6 +5,7 @@ locale.setlocale( locale.LC_ALL, '' )
 import re
 from categories import Category
 from items import FamilyItem, FamilyLobbyistsItem
+from utils import regex_for_registered
 
 class FamilyLobbyists(Category):
 	def __init__(self):
@@ -21,37 +22,23 @@ class FamilyLobbyists(Category):
 		self.category_description = 'Family Lobbyists'
 		self.isCurrency = False
 
-	def do_logic(self, raw):
+	def do_logic(self, raw_string):
 		"""
-		Method performing the logic of parsing raw data into dictionary
+		Method performing the logic of parsing raw data into item class
 		"""
 
-		template = {
-						'category_type' : self.category_type,
-						'category_id' : self.category_id,
-						'entry_id' : None,
-						'raw' : None,
-						'registered' : None,
-						'amount' : 0,
-						'pretty' : None
-						}
+		amount = None
+		next_id = len(self.entries) + 1
+		item_id = '%04d' % next_id
 
-		template['raw'] = raw
+		# not much we can really split on
+		pretty = raw_string.split(' (Registered')[0]
+		registered = regex_for_registered(raw_string)
 
-		next_num = len(self.entries) + 1
-		template['entry_id'] = '%04d' % next_num
+		item = FamilyLobbyistsItem(item_id, self.category_id, raw_string, pretty, registered, amount)
 
-		item_id = '%04d' % next_num
-		category_id = self.category_id
-		raw_string = raw
-		pretty = raw.split(' (Regis')[0]
-		amount = 0
-		registered = ''
-
-		self.items.append(FamilyLobbyistsItem(item_id, category_id, raw_string, pretty, registered, amount))
-
-
-		return template
+		self.items.append(item)
+		return
 
 class Family(Category):
 	def __init__(self):
@@ -68,34 +55,18 @@ class Family(Category):
 		self.category_description = 'Family'
 		self.isCurrency = False
 
-	def do_logic(self, raw):
+	def do_logic(self, raw_string):
 		"""
-		Method performing the logic of parsing raw data into dictionary
+		Method performing the logic of parsing raw data into item class
 		"""
 
-		template = {
-						'category_type' : self.category_type,
-						'category_id' : self.category_id,
-						'entry_id' : None,
-						'raw' : None,
-						'registered' : None,
-						'amount' : 0,
-						'pretty' : None
-						}
+		amount = None
+		next_id = len(self.entries) + 1
+		item_id = '%04d' % next_id
 
-		template['raw'] = raw
+		# not much we can really split on
+		pretty = raw_string.split(' (Registered')[0]
+		registered = regex_for_registered(raw_string)
 
-		next_num = len(self.entries) + 1
-		template['entry_id'] = '%04d' % next_num
-
-		item_id = '%04d' % next_num
-		category_id = self.category_id
-		raw_string = raw
-		pretty = raw.split(' (Regis')[0]
-		amount = 0
-		registered = ''
-
-		self.items.append(FamilyItem(item_id, category_id, raw_string, pretty, registered, amount))
-
-
-		return template
+		self.items.append(FamilyLobbyistsItem(item_id, self.category_id, raw_string, pretty, registered, amount))
+		return
