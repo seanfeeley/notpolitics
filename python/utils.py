@@ -142,7 +142,7 @@ def padded_string(string, padding=100):
 
 def regex_for_registered(raw_string):
     """
-    Returns a date class
+    Returns a date class formatted string
     """
     registered_regex = re.compile(r'\((.*?\))')
     registered_regex = re.compile(r"\bRegistered\b \d+ [A-Z][a-z]+ \d+")
@@ -151,6 +151,21 @@ def regex_for_registered(raw_string):
         match = registered_regex.findall(raw_string)
         date = str(match[-1].split('Registered ')[-1])
         return string_to_datetime(date).strftime("%d/%m/%Y")
+    else:
+        return None
+
+def regex_for_amount(raw_string):
+    """
+    Return integer amount
+    """
+    amount_regex = re.compile(r"£\d+")
+
+    if amount_regex.findall(raw_string.encode('utf-8'), re.UNICODE):
+        match = amount_regex.findall(raw_string)
+        if len(match) > 1:
+            pass
+        else:
+            return int(match[0])
     else:
         return None
 

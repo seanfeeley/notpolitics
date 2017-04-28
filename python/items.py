@@ -43,7 +43,7 @@ class Item():
 		blob = TextBlob(self.raw_string)
 
 		for word, tag in blob.tags:
-			if tag == 'NNP':
+			if tag in ['NNP', 'NN']:
 				self.nouns.append(word.lemmatize())
 
 	def pprint(self):
