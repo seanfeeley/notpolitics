@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # system libs
 import locale, ast, os, operator, json
 from bs4 import BeautifulSoup
@@ -214,7 +215,7 @@ class MemberOfParliament():
 
 	@property
 	def data(self):
-		"""total annual of mp"""
+		"""build a data dictionary of values required for dumping to json"""
 		data = {}
 		data['name'] = self.name
 		data['party'] = self.party
