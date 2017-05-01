@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 # system libs
 import os
@@ -25,16 +24,10 @@ class Item():
 		self.isGift = False
 		self.isDonation = False
 
+		# pluck out nouns, maybe we make a word cloud out of it
+		# or
+		# use it them to query companies house, land registry
 		self.get_nouns()
-
-	def __str__(self):
-		"""
-		Prints a pretty string representing the item, formatted to clip at the edge of the screen
-		"""
-		rows, columns = os.popen('stty size', 'r').read().split()
-		w = int(columns) - 30
-
-		return '\t(%s) %s (%s)' % (self.item_id, self.pretty.encode('utf-8')[:w], self.amount)
 
 	def get_nouns(self):
 		"""
@@ -57,7 +50,6 @@ class Item():
 		"""
 		Returns the class variables as a key/pair dict
 		"""
-		
 		return vars(self)
 
 class SalaryItem(Item):
@@ -148,6 +140,16 @@ class GiftsItem(Item):
 	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
 		"""
 		GiftsItem
+		"""
+
+		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)
+
+		self.isGift = True
+
+class GiftsOutsideUKItem(Item):
+	def __init__(self, item_id, category_id, raw_string, pretty, registered, amount):
+		"""
+		GiftsOutsideUKItem
 		"""
 
 		Item.__init__(self, item_id, category_id, raw_string, pretty, registered, amount)

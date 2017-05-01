@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# local libs
 
 from categories import Category
 from items import EmploymentItem
@@ -41,7 +41,7 @@ class Employment(Category):
 			elif 'a month' in raw_string.lower():
 				amount = amount * 12
 
-			next_id = len(self.entries) + 1
+			next_id = len(self.items) + 1
 			item_id = '%04d' % next_id
 
 			# not much we can really split on
@@ -49,5 +49,3 @@ class Employment(Category):
 			registered = regex_for_registered(raw_string)
 
 			self.items.append(EmploymentItem(item_id, self.category_id, raw_string, pretty, registered, amount))
-
-			return

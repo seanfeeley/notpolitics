@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # system libs
 import locale, ast, os, operator, json
 from bs4 import BeautifulSoup
@@ -15,10 +13,11 @@ from categories.gifts import GiftsOutsideUK, Gifts
 from categories.visits import VisitsOutsideUK
 from categories.donations import DirectDonations, IndirectDonations
 from categories.salary import Salary
-from utils import get_all_mps, get_request, padded_string
+from utils import get_all_mps, get_request
 
-locale.setlocale( locale.LC_ALL, '' )
+# locale.setlocale( locale.LC_ALL, '' )
 theyworkyou_apikey = 'DLXaKDAYSmeLEBBWfUAmZK3j'
+xml_data_file = os.path.join(os.path.dirname(__file__), '..', 'data', 'regmem2017-04-10.xml')
 request_wait_time = 3600.0
 
 class MemberOfParliament():
@@ -40,14 +39,16 @@ class MemberOfParliament():
 		# make sense of the html info, regarding registered intrests
 		self.getMPIntrests()
 
+		print '%s %s (%s) %s' % (self.first_name, self.last_name, self.party, self.constituency)
+
 	def setMember(self, member):
 		"""Set the member variables from the given member dictionary"""
 
-		self.name = member['name']
+		self.name = member['name'].decode('latin-1').encode("utf-8")
 		self.member_id = member['member_id']
 		self.person_id = member['person_id']
-		self.party = member['party']
-		self.constituency = member['constituency']
+		self.party = member['party'].decode('latin-1').encode("utf-8")
+		self.constituency = member['constituency'].decode('latin-1').encode("utf-8")
 
 		if member.has_key('office'):
 			self.office = member['office']
@@ -64,8 +65,8 @@ class MemberOfParliament():
 		self.person = ast.literal_eval(request.content)
 		self.person = self.person[0]
 
-		self.first_name = self.person['given_name']
-		self.last_name = self.person['family_name']
+		self.first_name = self.person['given_name'].decode('latin-1').encode("utf-8")
+		self.last_name = self.person['family_name'].decode('latin-1').encode("utf-8")
 
 	def getMPInfo(self):
 		"""Method queries theyworkforyou again, for the full info on a given member of parliament"""
@@ -81,10 +82,10 @@ class MemberOfParliament():
 
 		# annoyingly, the data from theyworkforyou for the registered intrests
 		# is in html, use BeautifulSoup to parse into regular text
-
 		intrests = self.full_info['register_member_interests_html']
 		soup = BeautifulSoup(intrests, 'html.parser')
 		text = soup.text
+
 		# split into lines for iteration
 		splits = text.splitlines()
 
@@ -164,8 +165,8 @@ class MemberOfParliament():
 		"""total wealth of mp"""
 		value = 0
 		for category in self.categories:
-			if category.wealth > 0:
-				value += category.wealth
+			if category.category_wealth > 0:
+				value += category.category_wealth
 		return value
 
 	@property
@@ -173,8 +174,8 @@ class MemberOfParliament():
 		"""total income of mp"""
 		value = 0
 		for category in self.categories:
-			if category.income > 0:
-				value += category.income
+			if category.category_income > 0:
+				value += category.category_income
 		return value
 
 	@property
@@ -182,8 +183,8 @@ class MemberOfParliament():
 		"""total gifts of mp"""
 		value = 0
 		for category in self.categories:
-			if category.gifts > 0:
-				value += category.gifts
+			if category.category_gifts > 0:
+				value += category.category_gifts
 		return value
 
 	@property
@@ -191,8 +192,9 @@ class MemberOfParliament():
 		"""total donations of mp"""
 		value = 0
 		for category in self.categories:
-			if category.donations > 0:
-				value += category.donations
+			if category.category_donations > 0:
+				value += category.category_donations
+
 		return value
 
 	@property
@@ -208,12 +210,11 @@ class MemberOfParliament():
 	def total_annual(self):
 		"""total annual of mp"""
 
-		return self.total_income + self.total_gifts + self.total_expenses
+		return self.total_income + self.total_gifts + self.total_expenses + self.total_donations
 
 	@property
 	def data(self):
 		"""total annual of mp"""
-
 		data = {}
 		data['name'] = self.name
 		data['party'] = self.party
@@ -223,117 +224,40 @@ class MemberOfParliament():
 		data['member_id'] = self.member_id
 		data['person_id'] = self.person_id
 
-		data['mp_income'] = self.total_income
-		data['mp_wealth'] = self.total_wealth
-		data['mp_gifts'] = self.total_gifts
-		data['mp_donations'] = self.total_donations
-
 		data['categories'] = []
+
 		for category in self.categories:
 			cat_data = category.data
 			temp = []
+			
 			for item in category.items:
 				temp.append(item.data)
 
 			cat_data['items'] = temp
 			data['categories'].append(cat_data)
 
-		return data
+		data['mp_income'] = self.total_income
+		data['mp_wealth'] = self.total_wealth
+		data['mp_gifts'] = self.total_gifts
+		data['mp_donations'] = self.total_donations
+		data['mp_annual'] = self.total_annual
 
-	def __str__(self):
-		
-		left_text = '%s\n%s %s (%s, %s)' % ('*'*200, self.first_name, self.last_name, self.party, self.constituency)
-		right_text = 'Income : %s  |  Wealth : %s  |  Gifts : %s  |  Donations : %s  |  Total Annual Income : %s\n%s\n' % (locale.currency(self.total_income, grouping=True), locale.currency(self.total_wealth, grouping=True), locale.currency(self.total_gifts, grouping=True), locale.currency(self.total_donations, grouping=True), locale.currency(self.total_annual, grouping=True), '*'*200)	
-		header = '%s %s' % (padded_string(left_text, 275), right_text)		
-		return header
+		return data
 
 def main(mps, options):
 
 	# fully parsed list of mps
-	mps = [MemberOfParliament(member) for member in mps]
-
-	# printout
-	feeback(mps, options)
+	mps = [MemberOfParliament(member).data for member in mps]
 
 	if options.json:
 		# write out to file
-		mp_data = [mp.data for mp in mps]
-		json_dump_location = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'json', 'dump.json')
+		json_dump_location = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'json', 'members_dump.json')
 
 		with open(json_dump_location, 'w') as jsonfile:
-			json.dump(mp_data, jsonfile)
-
-def feeback(mps, options):
-	""""""
-
-	# sort by options specified on commandline
-	if options.sortby == 'wealth':
-		mps = sorted(mps, key=operator.attrgetter('total_wealth'), reverse=False)
-	
-	elif options.sortby == 'income':
-		mps = sorted(mps, key=operator.attrgetter('total_income'), reverse=False)
-	
-	elif options.sortby == 'gifts':
-		mps = sorted(mps, key=operator.attrgetter('total_gifts'), reverse=False)
-	
-	elif options.sortby == 'expenses':
-		mps = sorted(mps, key=operator.attrgetter('total_expenses'), reverse=False)		
-
-	elif options.sortby == 'annual':
-		mps = sorted(mps, key=operator.attrgetter('total_annual'), reverse=False)	
-
-	else:
-		mps = sorted(mps, key=operator.attrgetter('%s.value' % options.sortby), reverse=False)
-
-	# now print by options specified on commandline
-	for mp in mps:
-		# the mp class is formatted, to print total income, wealth, gifts and expenses
-		# plus the mp name, party and constituency
-		print mp
-
-		# sort the categories by their id value
-		categories = sorted(mp.categories, key=operator.attrgetter('category_id'), reverse=False)
-		
-		opt = False
-		for category in categories:
-
-			if options.summary:
-				opt = True
-
-				# the category class is formatted to print it's name and total value - a summary
-				print category
-
-			elif options.detailed:
-				opt = True
-				print category
-
-				for item in category.items:
-					# the item class is formatted to hopefully print a useful bit of data
-					# needs improvement
-					print item
-				print ''
-			
-			elif options.debug:
-				opt = True
-				print category
-
-				for item in category.items:
-					# call the item class pprint method, which formatt unicode properly
-					# pprints the underling data of the item, nothing pretty about it
-					item.pprint()
-				print ''
-		if opt:
-			print ''
+			json.dump(mps, jsonfile)
 
 if __name__ == "__main__":
 	parser = OptionParser()
-
-	parser.add_option("--limit", help="Limit results (pre - sorted)", action="store", type='int', default=650)
-	parser.add_option("--summary", help="Summary print", action="store_true", default=False)
-	parser.add_option("--detailed", help="Detailed print", action="store_true", default=False)
-	parser.add_option("--debug", help="Debug print", action="store_true", default=False)
-	parser.add_option("--sortby", help="Sort By", action="store", default='income')
-	parser.add_option("--from", help="From Date", action="store", default='lastest')
 	parser.add_option("--json", help="Dump to Json file", action="store_true", default=True)
 
 	# parse the comand line
@@ -341,7 +265,7 @@ if __name__ == "__main__":
 
 	# return a list (of dicts) of mps
 	mps = get_all_mps(theyworkyou_apikey)
-	# mps = get_all_mps_from_xml()
+
 	searched = []
 
 	# TODO: fix this crude arg porser
@@ -356,9 +280,6 @@ if __name__ == "__main__":
 					searched.append(i)
 
 		mps = searched
-
-	if options.limit:
-		mps = mps[:options.limit]
 
 	main(mps, options)
 

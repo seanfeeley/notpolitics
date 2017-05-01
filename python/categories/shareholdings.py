@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# local libs
 
 from categories import Category
 from items import ShareholdingsItem, OtherShareholdingsItem
@@ -28,7 +28,7 @@ class Shareholdings(Category):
 		Method performing the logic of parsing raw data into item class
 		"""
 
-		next_id = len(self.entries) + 1
+		next_id = len(self.items) + 1
 		item_id = '%04d' % next_id
 
 		# not much we can really split on
@@ -37,8 +37,6 @@ class Shareholdings(Category):
 		amount = 1
 
 		self.items.append(ShareholdingsItem(item_id, self.category_id, raw_string, pretty, registered, amount))
-
-		return	
 
 class OtherShareholdings(Category):
 	def __init__(self):
@@ -60,7 +58,7 @@ class OtherShareholdings(Category):
 		Method performing the logic of parsing raw data into item class
 		"""
 
-		next_id = len(self.entries) + 1
+		next_id = len(self.items) + 1
 		item_id = '%04d' % next_id
 
 		# not much we can really split on
@@ -71,5 +69,3 @@ class OtherShareholdings(Category):
 			amount = 70000
 
 		self.items.append(OtherShareholdingsItem(item_id, self.category_id, raw_string, pretty, registered, amount))
-
-		return	

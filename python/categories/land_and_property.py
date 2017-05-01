@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# local libs
 
 from categories import Category
 from items import PropertyItem
@@ -24,7 +24,7 @@ class Property(Category):
 		Method performing the logic of parsing raw data into item class
 		"""
 
-		next_id = len(self.entries) + 1
+		next_id = len(self.items) + 1
 		item_id = '%04d' % next_id
 
 		# not much we can really split on
@@ -52,5 +52,3 @@ class Property(Category):
 			item = PropertyItem(item_id, self.category_id, raw_string, pretty, registered, amount)
 			item.isIncome = True
 			self.items.append(item)
-
-		return

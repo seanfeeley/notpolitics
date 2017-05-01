@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# local libs
 
 from categories import Category
 from items import SalaryItem, AdditionalSalaryItem
@@ -34,12 +34,18 @@ class Salary(Category):
 		self.add_basic_salary()
 		self.do_logic(None)
 
+		self.category_income = self.income
+		self.category_wealth = self.wealth
+		self.category_gifts = self.gifts
+		self.category_donations = self.donations
+		self.category_amount = self.amount
+
 	def add_basic_salary(self):
 		"""
 		Add basic mp salary
 		"""
 
-		next_id = len(self.entries) + 1
+		next_id = len(self.items) + 1
 		item_id = '%04d' % next_id
 
 		# not much we can really split on
@@ -82,5 +88,5 @@ class Salary(Category):
 				raw_string = pretty
 
 				if amount > 0:
-					self.items.append(SalaryItem(item_id, self.category_id, raw_string, pretty, registered, amount))
+					self.items.append(AdditionalSalaryItem(item_id, self.category_id, raw_string, pretty, registered, amount))
 

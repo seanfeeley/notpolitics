@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# local libs
 
 from categories import Category
 from items import FamilyItem, FamilyLobbyistsItem
@@ -25,7 +25,7 @@ class FamilyLobbyists(Category):
 		"""
 
 		amount = None
-		next_id = len(self.entries) + 1
+		next_id = len(self.items) + 1
 		item_id = '%04d' % next_id
 
 		# not much we can really split on
@@ -35,7 +35,6 @@ class FamilyLobbyists(Category):
 		item = FamilyLobbyistsItem(item_id, self.category_id, raw_string, pretty, registered, amount)
 
 		self.items.append(item)
-		return
 
 class Family(Category):
 	def __init__(self):
@@ -58,7 +57,7 @@ class Family(Category):
 		"""
 
 		amount = None
-		next_id = len(self.entries) + 1
+		next_id = len(self.items) + 1
 		item_id = '%04d' % next_id
 
 		# not much we can really split on
@@ -66,4 +65,4 @@ class Family(Category):
 		registered = regex_for_registered(raw_string)
 
 		self.items.append(FamilyLobbyistsItem(item_id, self.category_id, raw_string, pretty, registered, amount))
-		return
+		

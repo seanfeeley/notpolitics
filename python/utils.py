@@ -4,7 +4,6 @@
 import requests, time, ast, locale, pprint, re
 from datetime import datetime
 import xml.etree.cElementTree as ElementTree
-locale.setlocale( locale.LC_ALL, '' )
 
 # Classes
 class PrettyPrintUnicode(pprint.PrettyPrinter):
@@ -126,7 +125,7 @@ def get_xml_dict(xml_file):
     tree = ElementTree.parse(xml_file)
     root = tree.getroot()
     xmldict = XmlDictConfig(root)
-    return xmldict
+    return xmldict['regmem']
 
 def string_to_datetime(date_string):
     """
@@ -165,3 +164,8 @@ def regex_for_amount(raw_string):
     else:
         return 0
 
+def get_regex_pair_search(pair, raw_string):
+    """
+    Return a regex search class
+    """
+    return re.search(r'%s(.*?)%s' % (pair[0], pair[1]), raw_string)

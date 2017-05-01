@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
-
 # system  libs
 import locale
+import inspect
 
 # local libs
 from utils import padded_string
-
-locale.setlocale( locale.LC_ALL, '' )
 
 class Category():
 	'''
@@ -16,7 +13,7 @@ class Category():
 
 		# lists of raw entries and parsed entries (dictionaries)
 		self.raw_items = []
-		self.entries = []
+		# self.entries = []
 		self.items = []
 		
 		# category info
@@ -42,10 +39,9 @@ class Category():
 		Parse the list of raw data strings into entry dictionaries based on self.template
 		"""
 
+		# process the raw
 		for raw in self.raw_items:
-			entry = self.do_logic(raw)
-			if entry:
-				self.entries.append(entry)
+			self.do_logic(raw)
 
 		# add some variables for the category
 		# decorators arent stored as local class variables, but....
@@ -55,20 +51,21 @@ class Category():
 		self.category_wealth = self.wealth
 		self.category_gifts = self.gifts
 		self.category_donations = self.donations
+		self.category_amount = self.amount
 
 	def do_logic(self, raw):
 		"""
 		Method performing the logic of parsing raw data into dictionary
 		"""
 
-		return raw
+		pass
 
 	@property
 	def wealth(self):
 		"""
 		Sums all the wealth in the list of items
 		"""
-		value = 0
+		value = 0	
 		for entry in self.items:
 			if entry.isWealth:
 				value += entry.amount
@@ -95,6 +92,18 @@ class Category():
 		value = 0
 		for entry in self.items:
 			if entry.isGift:
+				value += entry.amount
+		
+		return value
+
+	@property
+	def amount(self):
+		"""
+		Sums all the donations in the list of items
+		"""
+		value = 0
+		for entry in self.items:
+			if entry.amount:
 				value += entry.amount
 		
 		return value
@@ -128,7 +137,6 @@ class Category():
 		"""
 		Returns the class variables as a key/pair dict
 		"""
-		income = self.income
 		return vars(self)
 
 	def add_entry(self, raw_data):
@@ -136,25 +144,3 @@ class Category():
 		Adds raw data, in the form of a string to a list of raw entries
 		"""
 		self.raw_items.append(raw_data)
-
-	def __str__(self):
-		"""
-		Print a neat summary of the category class
-		"""
-		description = '(%02d) %s' % (self.category_id, padded_string(self.category_description.encode('utf-8'), 20))
-
-		# if income and wealth (land and property category)
-		if self.wealth > 0 and self.income > 0:
-			return '%s |  Income : %s  |  Wealth : %s' % (description, locale.currency(self.income, grouping=True), locale.currency(self.wealth, grouping=True))
-		
-		elif self.wealth > 0:
-			return '%s |  Wealth : %s' % (description, locale.currency(self.wealth, grouping=True))
-		
-		elif self.income > 0:
-			return '%s |  Income : %s' % (description, locale.currency(self.income, grouping=True))
-		
-		elif self.gifts > 0:
-			return '%s |  Gifts : %s' % (description, locale.currency(self.gifts, grouping=True))
-	
-		else:
-			return '%s |' % (description)
