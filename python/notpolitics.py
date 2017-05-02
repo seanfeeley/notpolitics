@@ -19,6 +19,7 @@ from utils import get_all_mps, get_request
 # locale.setlocale( locale.LC_ALL, '' )
 theyworkyou_apikey = 'DLXaKDAYSmeLEBBWfUAmZK3j'
 xml_data_file = os.path.join(os.path.dirname(__file__), '..', 'data', 'regmem2017-04-10.xml')
+
 request_wait_time = 3600.0
 
 class MemberOfParliament():
@@ -54,8 +55,8 @@ class MemberOfParliament():
 		if member.has_key('office'):
 			self.office = member['office']
 		else:
-			self.office = None	
-
+			self.office = None
+			
 	def getPerson(self):
 		"""Method to set more variables"""
 

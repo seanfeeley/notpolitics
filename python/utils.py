@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # system libs
-import requests, time, ast, locale, pprint, re
+import requests, time, ast, locale, pprint, re, shutil
 from datetime import datetime
 import xml.etree.cElementTree as ElementTree
 
@@ -117,6 +117,30 @@ def get_all_mps(theyworkyou_apikey):
 	literal = ast.literal_eval(request.content)
 
 	return literal
+
+def get_mp_image(name, first_name, last_name, memid):
+    """
+    Function to return an image
+    """
+
+    # find the mp id from data.parliament
+    url = 'http://data.parliament.uk/membersdataplatform/services/mnis/members/query/name*%s/' % (name)
+    request = get_request(url=url, user=None, headers={'content-type' : 'application/json'})
+
+    try:
+        js = request.json()
+        member_id = js['Members']['Member']['@Member_Id']
+
+        # find the member photo
+        url = 'http://data.parliament.uk/membersdataplatform/services/images/MemberPhoto/%s/Web Photobooks' % member_id
+
+        response = requests.get(url, stream=True)
+
+        with open('../images/%s_%s_%s.png' % (first_name, last_name, memid), 'wb') as out_file:
+            shutil.copyfileobj(response.raw, out_file)
+        del response
+    except:
+        pass
 
 def get_xml_dict(xml_file):
     """

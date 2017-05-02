@@ -1,2 +1,4 @@
 *.pyc
 misc
+images
+.DS_Store

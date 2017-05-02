@@ -6,6 +6,7 @@ from optparse import OptionParser
 locale.setlocale( locale.LC_ALL, '' )
 
 json_dump_location = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'json', 'members_dump.json')
+images_directory = os.path.join(os.path.dirname(__file__), '..', 'images')
 
 def main(mps, options):
 	"""
@@ -27,10 +28,14 @@ def feeback(mps, options):
 		gifts = locale.currency(member['mp_gifts'], grouping=True)
 		donations = locale.currency(member['mp_donations'], grouping=True)
 		annual = locale.currency(member['mp_annual'], grouping=True)
+		forname = member['forname']
+		surname = member['surname']
+		member_id = member['member_id']
 
 		print '*'*150
 		print name, '(' + member['party'] + ')', member['constituency']
 		print 'Income :', income, ' |  Wealth :', wealth, ' |  Gifts :', gifts, ' |  Donations :', donations, ' |  Annual :', annual
+		print os.path.abspath(os.path.join(images_directory, '%s_%s_%s.png' % (forname, surname, member_id)))
 		print '*'*150
 		print ''
 
