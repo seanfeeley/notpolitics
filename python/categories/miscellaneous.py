@@ -17,7 +17,7 @@ class Miscellaneous(Category):
 		self.category_id = 10
 		self.category_type = 'miscellaneous'
 		self.category_description = 'Miscellaneous'
-		self.isCurrency = True
+		self.isCurrency = False
 
 	def do_logic(self, raw_string):
 		"""
