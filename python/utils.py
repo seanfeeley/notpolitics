@@ -121,6 +121,12 @@ def get_all_mps(theyworkyou_apikey):
 def get_mp_image(name, first_name, last_name, memid, output_path):
     """
     Function to return an image
+
+    Due to parliament being dissolved at 12:01 on 03/05/2017, the members query returns nothing,
+    simply because there are no members of parliament right now.
+
+    For now, use an offline xml version.
+
     """
 
     # find the mp id from data.parliament
