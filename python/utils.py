@@ -118,7 +118,7 @@ def get_all_mps(theyworkyou_apikey):
 
 	return literal
 
-def get_mp_image(name, first_name, last_name, memid):
+def get_mp_image(name, first_name, last_name, memid, output_path):
     """
     Function to return an image
     """
@@ -126,6 +126,7 @@ def get_mp_image(name, first_name, last_name, memid):
     # find the mp id from data.parliament
     url = 'http://data.parliament.uk/membersdataplatform/services/mnis/members/query/name*%s/' % (name)
     request = get_request(url=url, user=None, headers={'content-type' : 'application/json'})
+    filepath = '%s/%s_%s_%s.png' % (output_path, first_name, last_name, memid)
 
     try:
         js = request.json()
@@ -136,8 +137,11 @@ def get_mp_image(name, first_name, last_name, memid):
 
         response = requests.get(url, stream=True)
 
-        with open('../images/%s_%s_%s.png' % (first_name, last_name, memid), 'wb') as out_file:
+        filepath = '%s/%s_%s_%s.png' % (output_path, first_name, last_name, memid)
+
+        with open(filepath, 'wb') as out_file:
             shutil.copyfileobj(response.raw, out_file)
+            print 'Downloaded : %s' % filepath
         del response
     except:
         pass

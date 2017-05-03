@@ -5,7 +5,7 @@ import json, os
 
 from utils import get_mp_image
 
-images_directory = os.path.join(os.path.dirname(__file__), '..', 'images')
+images_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'images'))
 json_dump_location = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'json', 'members_dump.json')
 
 def read_json_file():
@@ -26,4 +26,4 @@ if __name__ == "__main__":
 
 	for mp in mps:
 		print 'Downloading : %s' % mp['name']
-		get_mp_image(mp['name'], mp['forname'], mp['surname'], mp['member_id'])
+		get_mp_image(mp['name'], mp['forname'], mp['surname'], mp['member_id'], images_directory)
